@@ -83,3 +83,20 @@ function DessertsList(props) {
 export default DessertsList;
 ```
 here first the input array gets filtered, then it gets sorted, then finally it gets mapped, where we get the return statement containing the element to be rendered. 
+
+## Keys
+
+While updating the UI of an app, React uses its Diffing Algorithm to calculate the minimum number of components that need to be changed in the tree of components. Although this algo works most of the time, there are some cases where react cannot make important assumptions to find the most optimal path for an update, which means the developer will need to step in. 
+
+imagine the drinks section
+```jsx
+<ul>
+    <li>Beer</li>
+    <li>wine</li>
+</ul>
+```
+When adding element to the end of this list, the Diffing algorithm works well, since react will match the two Beer trees, match the two Wine trees, and then inserts the new element.
+
+However while adding element to beginning of the list, algo offers worse performance, bec React will mutilate every child, instead of realising that it can keep Beer and Wine subtrees intact.
+
+To solve this issue React supports a Key attribute. Keys are identifiers that help react determine which items are changed, added or removed. Also act as instructors on how to treat a specific element when an update happens, and whether its internal state should be preserved or not. 
