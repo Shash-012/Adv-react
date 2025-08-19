@@ -121,3 +121,5 @@ General rule is to use a stable identifier, that is unique within its siblings. 
 The key used most often is a unique ID that comes from the data. These IDs mostly mirror database IDs, which is the ID given to an item in a database that by nature is gauranteed to be unique. What happens in cases where data doesn't have any suitable ID or we are rendering a list that is not dependent on server data. math.random() to generate keys is bad, because on re-rendering, a new key is generated, which the app will now have to trace again. index values could work, but face a problem when modifying positions by sorting or adding/removing items. 
 
 keys when used improperly negatively affect performance, and the user faces internal glitches.
+
+Keys tell React which array item each component corresponds to, so that it can match them up later. This becomes important if your array items can move (e.g. due to sorting), get inserted, or get deleted. A well-chosen key helps React infer what exactly has happened, and make the correct updates to the DOM tree. --> Official React documentation 
