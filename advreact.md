@@ -135,3 +135,132 @@ Different sources of data provide different sources of keys:
 
 - Keys must be unique among siblings. However, it’s okay to use the same keys for JSX nodes in different arrays.
 - Keys must not change or that defeats their purpose! Don’t generate them while rendering.
+
+
+## Controlled Components
+
+We encounter forms very frequently. range from simple email enter to subscribe, to registering on social media sites. HTML forms work differently to other DOM (uses nodes to describe various parts of the document) elements when it comes to React. Traditional HTML forms keep some internal state inside the DOM and have some default behaviour when submitting them, done via the action attribute, which points to end point that will handle the request.
+
+For a more granular level of control. Imagine there was a function that could handle the submission of the form and could access the data the user entered into it. That's where controlled components come in. They offer a declarative API to enable full control of state of form elements at any point in time, using React states. React state is made the single source of truth, controlling the displayed value of your form elements at all times
+
+Value is a special property to determine the input content at any point of time during the render life cycle. NSo to create a controlled component, need to combine local state and value prop. Initially assign the local state to the value property. How do you get updates from any new text character entered in input? for that we need a second prop, the **onChange callback**.
+
+The onChange callback recieves an event parameter, which is an event object representing the action that just took place similiar to events on DOM elements.
+
+```jsx
+handleChange(event){
+  setValue(event.target.value);
+}
+// To get the value for every new keystroke, you need to access the target property from the event and grab the value from that object, which is a string. Finally to have control over the form values, whenever the form is submitted, you can use the onSubmit prop in the form HTML element
+
+<form onSubmit={handleSubmit}>
+  ...
+</form>
+
+handleSubmit(event){
+  validate(value);
+  event.preventDefault();
+}
+```
+The onSubmit callback also recieves a DOM-like event as a parameter. Their we can access form values to perform any desired logic that must take place before submission. Also, if you want to prevent the default html form behaviour, you need to call event.preventDefault(); inside the onSubmit callback
+
+In most cases, React recommends using controlled components to implement forms. While this approach aligns with the React declarative model, uncontrolled form fields are still a valid option and have their merit. Let's break them down to see the differences between the two approaches and when you should use each method.
+
+### Uncontrolled Components
+
+```jsx
+const Form = () => { 
+ return ( 
+   <div> 
+     <input type="text" /> 
+   </div> 
+ ); 
+};
+```
+
+They remember exactly what you typed, being the DOM itself that maintains that internal state. How can you then get their value? The answer is by using a React ref.
+
+```jsx
+const Form = () => { 
+ const inputRef = useRef(null); 
+
+ const handleSubmit = () => { 
+   const inputValue = inputRef.current.value; 
+   // Do something with the value 
+ } 
+ return ( 
+   <form onSubmit={handleSubmit}> 
+     <input ref={inputRef} type="text" /> 
+   </form> 
+ ); 
+}; 
+```
+You must pull the value from the field when needed.
+
+Uncontrolled components are the simplest way to implement form inputs. There are certainly valued cases for them, especially when your form is straightforward. Unfortunately, they are not as powerful as their counterpart
+
+### Controlled Component Example
+
+They accept their current value as a prop and a callback to change that value. That implies that the value of the input has to live in the React state somewhere. Typically, the component that renders the input (like a form component) saves that in its state
+
+Every time you type a new character, the handleChange function is executed. It receives the new value of the input, and then it sets it in the state. In the code example above, the flow would be as follows:
+- The input starts out with an empty string: “”
+
+- You type “a” and handleChange gets an “a” attached in the event object, as e.target.value, and subsequently calls setValue with it. The input is then updated to have the value of “a”. 
+
+- You type “b” and handleChange gets called with e.target.value being “ab”.and sets that to the state. That gets set into the state. The input is then re-rendered once more, now with value = "ab" 
+
+This flow pushes the value changes to the form component instead of pulling like the ref example from the uncontrolled version. Therefore, the Form component always has the input's current value without needing to ask for it explicitly.
+
+As a result, your data (React state) and UI (input tags) are always in sync. Another implication is that forms can respond to input changes immediately
+
+```jsx
+const Form = () => { 
+ const [value, setValue] = useState(""); 
+
+ const handleChange = (e) => { 
+   setValue(e.target.value) 
+ } 
+
+ return ( 
+   <form> 
+     <input 
+       value={value} 
+       onChange={handleChange} 
+       type="text" 
+     /> 
+   </form> 
+ ); 
+}; 
+```
+
+### File input type
+
+There are some specific form inputs that are always uncontrolled, like the file input tag. 
+
+In React, an <input type="file" /> is always an uncontrolled component because its value is read-only and can't be set programmatically. 
+
+```jsx
+const Form = () => { 
+ const fileInput = useRef(null); 
+
+ const handleSubmit = (e) => { 
+   e.preventDefault(); 
+   const files = fileInput.current.files; 
+   // Do something with the files here 
+ } 
+
+ return ( 
+   <form onSubmit={handleSubmit}> 
+     <input 
+       ref={fileInput} 
+       type="file" 
+     /> 
+   </form> 
+ ); 
+}; 
+```
+
+![alt text](image.png)
+
+features that each one supports
